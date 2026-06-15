@@ -7,6 +7,7 @@ import NewRecipe from './pages/NewRecipe.jsx';
 import ShoppingList from './pages/ShoppingList.jsx';
 import Profile from './pages/Profile.jsx';
 import Login from './pages/Login.jsx';
+import DateNightCookOff from './pages/DateNightCookOff.jsx';
 
 const sampleRecipes = [
   {
@@ -57,6 +58,7 @@ const sampleRecipes = [
 
 const pageNames = {
   '/': 'Feed',
+  '/date-night': 'Date Night',
   '/new': 'New Recipe',
   '/shopping': 'Shopping',
   '/profile': 'Profile',
@@ -65,6 +67,7 @@ const pageNames = {
 
 const tabLinks = [
   { path: '/', label: 'Feed' },
+  { path: '/date-night', label: 'Date' },
   { path: '/shopping', label: 'Shopping' },
   { path: '/new', label: 'New' },
   { path: '/profile', label: 'Profile' },
@@ -119,6 +122,15 @@ function App() {
       <main className="content-shell">
         <Routes>
           <Route path="/" element={<Feed recipes={recipes} onAddToShoppingList={addToShoppingList} />} />
+          <Route
+            path="/date-night"
+            element={
+              <DateNightCookOff
+                onAddToShoppingList={addToShoppingList}
+                onAddRecipes={addRecipe}
+              />
+            }
+          />
           <Route path="/login" element={<Login />} />
           <Route
             path="/new"
