@@ -1,0 +1,51 @@
+{
+  "source": "https://github.com/Thedoctorjpg/RTDB-Auckland",
+  "api": {
+    "gtfsStops": "https://api.at.govt.nz/gtfs/v3/stops",
+    "realtimeTripUpdates": "https://api.at.govt.nz/v2/public/realtime/tripupdates",
+    "keyEnv": "AT_API_KEY"
+  },
+  "display": {
+    "rotationSeconds": 45,
+    "refreshIntervalSeconds": 30,
+    "maxDepartures": 10
+  },
+  "locations": [
+    {
+      "id": "waitemata",
+      "name": "Waitemata Station",
+      "searchTerm": "Waitemata",
+      "mode": "train",
+      "icon": "🚆",
+      "routePrefixes": [],
+      "dateRole": "AKL CBD rail hub — connect to Britomart before airport bus"
+    },
+    {
+      "id": "britomart",
+      "name": "Britomart Bus Hub",
+      "searchTerm": "Britomart",
+      "mode": "bus",
+      "icon": "🚌",
+      "routePrefixes": [
+        "64-", "65-", "66-", "67-", "68-", "18-", "20-", "22-", "24-", "25-", "27-", "30-",
+        "70-", "75-", "295-", "298-", "309-", "321-", "744-", "747-", "751-", "755-", "781-", "782-"
+      ],
+      "dateRole": "Airport connectors & CBD buses — check RTDB before date-night flight"
+    },
+    {
+      "id": "downtown-ferry",
+      "name": "Downtown Ferry Terminal",
+      "searchTerm": "Downtown Ferry",
+      "mode": "ferry",
+      "icon": "⛴️",
+      "routePrefixes": [
+        "BAYS-", "BIRK-", "KPHS-", "KPHM-", "PINE-", "RAK-", "RANG-", "TIRI-", "WSTH-", "MTIA-", "HMB-"
+      ],
+      "dateRole": "Optional Devonport/Waiheke buffer day — not on cook-off night"
+    }
+  ],
+  "simulation": {
+    "enabledWhenNoApiKey": true,
+    "mockHeadsigns": ["Glen Innes", "Newmarket", "Onehunga", "Devonport", "Waiheke"]
+  }
+}

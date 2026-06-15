@@ -8,15 +8,24 @@ import {
   computeCookOffWinner,
   girlToRecipe
 } from '../data/dateNightCookOff.js';
+import {
+  DATE_SCHEDULE,
+  RTDB,
+  TIMEZONE,
+  optimizeDateWindow,
+  rtdbLocationById
+} from '../data/transportSchedule.js';
 
-const PHASES = ['outing', 'stations', 'cookoff', 'results'];
+const PHASES = ['schedule', 'outing', 'stations', 'cookoff', 'results'];
 
 export default function DateNightCookOff({ onAddToShoppingList, onAddRecipes }) {
-  const [phase, setPhase] = useState('outing');
+  const [phase, setPhase] = useState('schedule');
+  const [outingStart, setOutingStart] = useState('17:00');
   const [outingDone, setOutingDone] = useState({});
   const [scores, setScores] = useState({});
   const [started, setStarted] = useState(false);
 
+  const optimized = useMemo(() => optimizeDateWindow({ outingStart }), [outingStart]);
   const rankings = useMemo(() => computeCookOffWinner(scores), [scores]);
   const winner = rankings[0]?.total > 0 ? rankings[0] : null;
 
@@ -70,6 +79,7 @@ export default function DateNightCookOff({ onAddToShoppingList, onAddRecipes }) 
             className={phase === p ? 'phase-btn active' : 'phase-btn'}
             onClick={() => setPhase(p)}
           >
+            {p === 'schedule' && '0 · Schedule'}
             {p === 'outing' && '1 · Outing'}
             {p === 'stations' && '2 · Stations'}
             {p === 'cookoff' && '3 · Score'}
@@ -78,9 +88,56 @@ export default function DateNightCookOff({ onAddToShoppingList, onAddRecipes }) 
         ))}
       </nav>
 
+      {phase === 'schedule' && (
+        <div className="card-panel schedule-panel">
+          <h2>Optimised date schedule · Auckland → Melbourne</h2>
+          <p className="meta">
+            RTDB-Auckland: refresh every {RTDB.display.refreshIntervalSeconds}s · rotate boards every{' '}
+            {RTDB.display.rotationSeconds}s · {TIMEZONE.note}
+          </p>
+          <label className="schedule-start">
+            Outing start (Melbourne)
+            <input
+              type="time"
+              value={outingStart}
+              onChange={(e) => setOutingStart(e.target.value)}
+            />
+          </label>
+          <dl className="schedule-optimized">
+            <div><dt>Ingredients done</dt><dd>{optimized.ingredientCapEnd}</dd></div>
+            <div><dt>Flat white by</dt><dd>{optimized.flatWhiteBy}</dd></div>
+            <div><dt>Kitchen / cook-off</dt><dd>{optimized.kitchenStart} → {optimized.scoreStart}</dd></div>
+            <div><dt>Home buffer</dt><dd>{optimized.homeBy} (tram/ride)</dd></div>
+          </dl>
+          <ul className="schedule-timeline">
+            {DATE_SCHEDULE.map((leg) => {
+              const rtdb = leg.rtdbLocation ? rtdbLocationById(leg.rtdbLocation) : null;
+              return (
+                <li key={leg.id} className={leg.cookOffPhase ? 'schedule-leg cookoff' : 'schedule-leg'}>
+                  <span className="schedule-time">{leg.time}</span>
+                  <span className="schedule-city">{leg.city}</span>
+                  <strong>{leg.title}</strong>
+                  <p>{leg.action}</p>
+                  {rtdb && (
+                    <p className="schedule-rtdb">
+                      {rtdb.icon} RTDB {rtdb.name} — {rtdb.dateRole}
+                    </p>
+                  )}
+                  {leg.pin && <span className="schedule-pin">Pin: {leg.pin}</span>}
+                </li>
+              );
+            })}
+          </ul>
+          <button className="primary-button" type="button" onClick={() => setPhase('outing')}>
+            Outing checklist →
+          </button>
+        </div>
+      )}
+
       {phase === 'outing' && (
         <div className="card-panel">
           <h2>Take the girls out · {DATE_NIGHT_VENUE.name}</h2>
+          <p className="meta">Optimised meet {optimized.outingStart} · kitchen {optimized.kitchenStart}</p>
           <p>{DATE_NIGHT_VENUE.tagline}</p>
           <ul className="outing-list">
             {DATE_NIGHT_VENUE.outingSteps.map((step, i) => (
